@@ -1,1 +1,26 @@
-
+{
+  "NEO777": {
+    "name": "Thomas Anderson",
+    "role": "SYSTEM ARCHITECT (DEV)",
+    "gender": "M",
+    "batch": "senior"
+  },
+  "TRINITY99": {
+    "name": "Trinity",
+    "role": "CLASS REPRESENTATIVE (GIRLS)",
+    "gender": "F",
+    "batch": "senior"
+  },
+  "PETER25": {
+    "name": "Peter Parker",
+    "role": "1st YEAR (FRESHER)",
+    "gender": "M",
+    "batch": "fresher"
+  },
+  "GWEN25": {
+    "name": "Gwen Stacy",
+    "role": "1st YEAR (FRESHER)",
+    "gender": "F",
+    "batch": "fresher"
+  }
+}
