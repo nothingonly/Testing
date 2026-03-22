@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import LoginScreen from './components/ui/LoginScreen.jsx';
+import IntroScreen from './components/ui/IntroScreen.jsx';
+import Dashboard from './components/ui/Dashboard.jsx';
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState('login'); // 'login', 'intro', 'dashboard'
@@ -7,30 +9,28 @@ function App() {
 
   const handleLoginSuccess = (userData) => {
     setActiveUser(userData);
-    setCurrentScreen('intro'); // Move to the next screen!
-    console.log("Logged in as:", userData);
+    setCurrentScreen('intro'); 
+  };
+
+  const handleInitSystem = () => {
+    // We will add sound effects and 3D camera animations here later!
+    setCurrentScreen('dashboard');
   };
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-[#020005]">
       
-      {/* 3D Canvas Layer will go here later */}
+      {/* 3D Canvas Layer */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         {/* <Scene /> */}
       </div>
 
       {/* UI Routing Layer */}
-      {currentScreen === 'login' && (
-        <LoginScreen onLoginSuccess={handleLoginSuccess} />
-      )}
-
-      {currentScreen === 'intro' && (
-        <div className="relative z-10 flex items-center justify-center w-full h-full">
-           <h1 className="text-neon font-orbitron text-2xl tracking-widest">
-             WELCOME, {activeUser?.name.toUpperCase()}
-           </h1>
-        </div>
-      )}
+      {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
+      
+      {currentScreen === 'intro' && <IntroScreen user={activeUser} onInitSystem={handleInitSystem} />}
+      
+      {currentScreen === 'dashboard' && <Dashboard user={activeUser} />}
 
     </div>
   );
