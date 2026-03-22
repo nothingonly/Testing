@@ -1,0 +1,13 @@
+{
+  "eventName": "UDBHAV",
+  "eventYear": "'26",
+  "venue": {
+    "name": "Cyberdine Systems Nexus",
+    "address": "Level 4, Sector 7G, Neo-Tokyo Grid.",
+    "speechText": "The venue is the Cyberdine Systems Nexus."
+  },
+  "timings": {
+    "display": "07:00 AM - 07:00 PM",
+    "speechText": "The event runs from 7 AM to 7 PM."
+  }
+}
