@@ -3,6 +3,11 @@ import LoginScreen from './components/ui/LoginScreen.jsx';
 import IntroScreen from './components/ui/IntroScreen.jsx';
 import Dashboard from './components/ui/Dashboard.jsx';
 import Scene from './components/canvas/Scene.jsx';
+import './index.css'
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState('login'); // 'login', 'intro', 'dashboard'
