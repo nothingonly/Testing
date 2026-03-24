@@ -22,20 +22,4 @@
   .holo-text {
     text-shadow: 0 0 10px rgba(0, 243, 255, 0.7);
   }
-  .text-shadow-neon {
-    text-shadow: 0 0 10px #00f3ff;
-  }
 }
-
-/* Arc Reactor Pulse Animations */
-@keyframes pulse-red {
-  0% { box-shadow: 0 0 20px #ff003c; }
-  50% { box-shadow: 0 0 40px #ff003c; }
-  100% { box-shadow: 0 0 20px #ff003c; }
-}
-@keyframes pulse-gold {
-  0% { box-shadow: 0 0 20px #ffd700; }
-  50% { box-shadow: 0 0 40px #ffd700; }
-  100% { box-shadow: 0 0 20px #ffd700; }
-}
-
