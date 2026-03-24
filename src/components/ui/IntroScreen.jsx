@@ -1,34 +1,54 @@
 import React from 'react';
 
 export default function IntroScreen({ user, onInitSystem }) {
-  // Check if the user is a special admin to give them gold text
-  const isArchitect = user.role.includes('ARCHITECT');
+  // Fallbacks in case user data is missing for any reason
+  const userName = user?.name || 'UNKNOWN AGENT';
+  const userRole = user?.role || 'UNIDENTIFIED ROLE';
+
+  // Dynamic styling based on the agent's role
+  let roleColorClass = "text-gray-400";
+  let roleShadowClass = "";
+
+  if (userRole.includes('ARCHITECT')) {
+    roleColorClass = "text-yellow-400";
+    roleShadowClass = "drop-shadow-[0_0_10px_#ffd700]";
+  } else if (userRole.includes('REP') || userRole.includes('CR')) {
+    roleColorClass = "text-[#ff003c]";
+    roleShadowClass = "drop-shadow-[0_0_10px_#ff003c]";
+  }
 
   return (
-    <section className="absolute inset-0 z-10 w-full h-full flex flex-col pointer-events-none items-center justify-center p-6">
-      <div className="text-center relative pointer-events-auto">
-        <div className="text-neon font-mono text-xs mb-4 tracking-[0.4em]">
+    <section className="absolute inset-0 z-10 w-full h-full flex flex-col items-center justify-center p-6 pointer-events-none">
+      <div className="text-center relative z-20 pointer-events-auto">
+        
+        {/* Blinking Access Text */}
+        <div className="text-neon font-mono text-xs mb-4 tracking-[0.4em] animate-pulse">
           ACCESS GRANTED
         </div>
         
-        <h1 className="text-5xl font-display font-bold text-white mb-2 holo-text">
+        {/* Main Welcome Heading */}
+        <h1 className="text-5xl md:text-7xl font-display font-bold text-white mb-2 drop-shadow-[0_0_15px_rgba(0,243,255,0.8)] tracking-wider">
           WELCOME
         </h1>
         
-        <h2 className="text-xl md:text-3xl font-mono text-neon tracking-widest border-b border-neon inline-block pb-2">
-          {user.name.toUpperCase()}
+        {/* Dynamic User Name */}
+        <h2 className="text-2xl md:text-4xl font-mono text-neon tracking-widest border-b border-neon inline-block pb-2 uppercase">
+          {userName}
         </h2>
         
-        <div className={`text-sm font-mono mt-2 tracking-[0.3em] ${isArchitect ? 'text-yellow-400 drop-shadow-[0_0_8px_#ffd700]' : 'text-gray-400'}`}>
-          /// {user.role}
+        {/* Dynamic Role / Title */}
+        <div className={`text-sm md:text-base font-mono mt-3 tracking-[0.3em] uppercase transition-all duration-500 ${roleColorClass} ${roleShadowClass}`}>
+          /// {userRole}
         </div>
         
+        {/* Action Button */}
         <button 
           onClick={onInitSystem} 
-          className="mt-12 px-10 py-4 border-2 border-neon text-neon font-bold font-mono tracking-widest hover:bg-neon hover:text-black transition-all shadow-[0_0_20px_#00f3ff]"
+          className="mt-16 px-10 py-4 border-2 border-neon text-neon font-bold font-mono tracking-[0.2em] hover:bg-neon hover:text-black transition-all duration-300 shadow-[0_0_15px_rgba(0,243,255,0.4)] hover:shadow-[0_0_30px_rgba(0,243,255,0.8)]"
         >
           INITIALIZE SYSTEM
         </button>
+
       </div>
     </section>
   );
