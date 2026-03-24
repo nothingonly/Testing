@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import config from '../../data/config.json';
+import { useVoiceAssistant } from '../../hooks/useVoiceAssistant.js';
 
 export default function Dashboard({ user }) {
   const [time, setTime] = useState('00:00');
-  const [isListening, setIsListening] = useState(false);
   const [activePanel, setActivePanel] = useState({
     title: 'SYSTEM ONLINE',
-    body: `Welcome, Agent <strong>${user?.name?.split(' ')[0] || 'UNKNOWN'}</strong>.<br/><br/>Status: <span class="text-neon">${user?.role || 'GUEST'}</span><br/><br/><span class="text-neon">></span> <strong>Tap buttons</strong> below to navigate.<br/><span class="text-neon">></span> Voice integration pending API link.`,
+    body: `Welcome, Agent <strong>${user?.name?.split(' ')[0] || 'UNKNOWN'}</strong>.<br/><br/>Status: <span class="text-neon">${user?.role || 'GUEST'}</span><br/><br/><span class="text-neon">></span> <strong>Tap buttons</strong> below.<br/><span class="text-neon">></span> Or tap the reactor and say "Venue".`,
   });
+
+  // Bring in our new Voice Hook!
+  const { isListening, isSpeaking, transcript, toggleListening, speak, setTranscript } = useVoiceAssistant();
 
   // Real-time clock
   useEffect(() => {
@@ -17,18 +20,14 @@ export default function Dashboard({ user }) {
     return () => clearInterval(timer);
   }, []);
 
-  // Panel update logic
+  // Panel update logic (Now includes speaking!)
   const updatePanel = (key) => {
     if (key === 'venue') {
-      setActivePanel({ 
-        title: 'LOCATION', 
-        body: `<strong>${config.venue.name}</strong><br/>${config.venue.address}` 
-      });
+      setActivePanel({ title: 'LOCATION', body: `<strong>${config.venue.name}</strong><br/>${config.venue.address}` });
+      speak(config.venue.speechText);
     } else if (key === 'timings') {
-      setActivePanel({ 
-        title: 'TIMELINE', 
-        body: `<strong>EVENT HOURS</strong><br/>${config.timings.display}` 
-      });
+      setActivePanel({ title: 'TIMELINE', body: `<strong>EVENT HOURS</strong><br/>${config.timings.display}` });
+      speak(config.timings.speechText);
     } else if (key === 'roses') {
       const targetBatch = user?.batch === 'fresher' ? '1st Year' : '2nd Year';
       const targetGender = user?.gender === 'M' ? 'Girl' : 'Boy';
@@ -36,14 +35,40 @@ export default function Dashboard({ user }) {
         title: 'PROTOCOL: ROSES & CHOCO',
         body: `<strong>🌹 RED ROSE:</strong><br/>Give to: <span class="text-pink-500">${targetBatch} ${targetGender}</span><br/><br/><strong>🍫 CHOCOLATE:</strong><br/>Give to: <span class="text-purple-400">Any Senior</span>`
       });
+      speak(`Protocol initiated. Red rose for ${targetBatch} ${targetGender}s. Chocolates for any senior.`);
     }
   };
 
-  // Placeholder for the future AI Voice Toggle
-  const toggleVoice = () => {
-    setIsListening(!isListening);
-    // Future: Trigger Gemini/ElevenLabs API here
-  };
+  // Listen for voice commands changing the transcript
+  useEffect(() => {
+    if (!transcript) return;
+    
+    if (transcript.includes('venue') || transcript.includes('where') || transcript.includes('location')) {
+      updatePanel('venue');
+    } else if (transcript.includes('time') || transcript.includes('when')) {
+      updatePanel('timings');
+    } else if (transcript.includes('rose') || transcript.includes('chocolate')) {
+      updatePanel('roses');
+    } else {
+      speak("Command not recognized. Please specify venue, timings, or protocols.");
+    }
+    
+    // Clear transcript after processing so we can say the same command again later
+    setTranscript('');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transcript]);
+
+  // Determine reactor color based on voice state
+  let reactorColorClass = "bg-white shadow-[0_0_20px_#00f3ff]"; // Default
+  let ringSpinClass = "animate-[spin_4s_linear_infinite] shadow-[0_0_15px_rgba(0,243,255,0.5)] border-neon";
+  
+  if (isListening) {
+    reactorColorClass = "bg-red-500 shadow-[0_0_30px_#ff003c] animate-pulse";
+    ringSpinClass = "animate-spin border-red-500 shadow-[0_0_20px_#ff003c]";
+  } else if (isSpeaking) {
+    reactorColorClass = "bg-yellow-400 shadow-[0_0_30px_#ffd700] animate-pulse";
+    ringSpinClass = "animate-[spin_2s_linear_infinite] border-yellow-400 shadow-[0_0_20px_#ffd700]";
+  }
 
   return (
     <main className="absolute inset-0 z-10 w-full h-full flex flex-col pointer-events-none">
@@ -58,8 +83,8 @@ export default function Dashboard({ user }) {
         </div>
         <div className="text-right">
           <div className="text-lg font-mono text-white tracking-widest">{time}</div>
-          <div className={`text-[10px] text-neon font-mono mt-1 transition-opacity duration-300 ${isListening ? 'opacity-100' : 'opacity-0'}`}>
-            LISTENING...
+          <div className={`text-[10px] font-mono mt-1 transition-opacity duration-300 ${isListening || isSpeaking ? 'opacity-100' : 'opacity-0'} ${isListening ? 'text-red-500' : 'text-yellow-400'}`}>
+            {isListening ? 'LISTENING...' : 'PROCESSING...'}
           </div>
         </div>
       </header>
@@ -67,7 +92,6 @@ export default function Dashboard({ user }) {
       {/* --- MAIN HUD PANEL --- */}
       <div className="flex-1 flex items-center justify-center relative my-4 pointer-events-auto">
         <div className="max-w-3xl w-full p-6 relative mx-4 bg-transparent border-none shadow-none" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.9), 0 0 15px rgba(0, 243, 255, 0.4)' }}>
-          {/* Decorative Corners */}
           <div className="absolute -top-2 -left-2 w-4 h-4 border-t-2 border-l-2 border-neon"></div>
           <div className="absolute -bottom-2 -right-2 w-4 h-4 border-b-2 border-r-2 border-neon"></div>
           
@@ -87,7 +111,6 @@ export default function Dashboard({ user }) {
         <button onClick={() => updatePanel('venue')} className="glass py-3 text-neon font-mono text-xs tracking-widest hover:bg-neon/20 transition-all duration-300 shadow-[0_0_10px_rgba(0,243,255,0.1)] hover:shadow-[0_0_20px_rgba(0,243,255,0.4)]">VENUE</button>
         <button onClick={() => updatePanel('timings')} className="glass py-3 text-neon font-mono text-xs tracking-widest hover:bg-neon/20 transition-all duration-300 shadow-[0_0_10px_rgba(0,243,255,0.1)] hover:shadow-[0_0_20px_rgba(0,243,255,0.4)]">TIMINGS</button>
         
-        {/* Conditional rendering based on user batch */}
         {user?.batch === 'fresher' && (
           <>
             <button className="glass py-3 text-white font-mono text-xs tracking-widest border-white bg-white/5 hover:bg-white/20 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.1)]">CLAIM INVITE</button>
@@ -105,11 +128,11 @@ export default function Dashboard({ user }) {
 
       {/* --- ARC REACTOR (VOICE BUTTON) --- */}
       <div 
-        onClick={toggleVoice}
+        onClick={toggleListening}
         className="fixed bottom-6 right-6 w-16 h-16 z-50 flex items-center justify-center cursor-pointer pointer-events-auto"
       >
-        <div className={`absolute inset-0 border-2 border-neon rounded-full transition-all duration-1000 ${isListening ? 'animate-spin border-red-500 shadow-[0_0_20px_#ff003c]' : 'animate-[spin_4s_linear_infinite] shadow-[0_0_15px_rgba(0,243,255,0.5)]'}`}></div>
-        <div className={`w-1/3 h-1/3 rounded-full transition-all duration-300 ${isListening ? 'bg-red-500 shadow-[0_0_30px_#ff003c] animate-pulse' : 'bg-white shadow-[0_0_20px_#00f3ff]'}`}></div>
+        <div className={`absolute inset-0 border-2 rounded-full transition-all duration-500 ${ringSpinClass}`}></div>
+        <div className={`w-1/3 h-1/3 rounded-full transition-all duration-300 ${reactorColorClass}`}></div>
       </div>
 
     </main>
