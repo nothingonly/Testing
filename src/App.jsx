@@ -3,13 +3,8 @@ import LoginScreen from './components/ui/LoginScreen.jsx';
 import IntroScreen from './components/ui/IntroScreen.jsx';
 import Dashboard from './components/ui/Dashboard.jsx';
 import Scene from './components/canvas/Scene.jsx';
-import './index.css'
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-function App() {
+export default function App() {
   const [currentScreen, setCurrentScreen] = useState('login'); // 'login', 'intro', 'dashboard'
   const [activeUser, setActiveUser] = useState(null);
 
@@ -19,29 +14,30 @@ function App() {
   };
 
   const handleInitSystem = () => {
-    // We will add sound effects and 3D camera animations here later!
     setCurrentScreen('dashboard');
   };
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-[#020005]">
       
-      {/* 3D Canvas Layer */}
+      {/* 3D Canvas Background Layer */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-  <Scene currentScreen={currentScreen} />
-</div>
-        {/* <Scene /> */}
+        <Scene currentScreen={currentScreen} />
       </div>
 
       {/* UI Routing Layer */}
-      {currentScreen === 'login' && <LoginScreen onLoginSuccess={handleLoginSuccess} />}
+      {currentScreen === 'login' && (
+        <LoginScreen onLoginSuccess={handleLoginSuccess} />
+      )}
       
-      {currentScreen === 'intro' && <IntroScreen user={activeUser} onInitSystem={handleInitSystem} />}
+      {currentScreen === 'intro' && (
+        <IntroScreen user={activeUser} onInitSystem={handleInitSystem} />
+      )}
       
-      {currentScreen === 'dashboard' && <Dashboard user={activeUser} />}
+      {currentScreen === 'dashboard' && (
+        <Dashboard user={activeUser} />
+      )}
 
     </div>
   );
 }
-
-export default App;
