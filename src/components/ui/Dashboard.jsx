@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import config from '../../data/config.json';
 // Import the Hook and the new Modal!
-import { useVoiceAssistant } from '../../useVoiceAssistant.js'; 
+import { useVoiceAssistant } from '../../hooks/useVoiceAssistant.js';
 import InviteModal from './InviteModal.jsx';
 
 export default function Dashboard({ user }) {
