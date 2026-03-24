@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import LoginScreen from './components/ui/LoginScreen.jsx';
 import IntroScreen from './components/ui/IntroScreen.jsx';
 import Dashboard from './components/ui/Dashboard.jsx';
+import Scene from './components/canvas/Scene.jsx';
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState('login'); // 'login', 'intro', 'dashboard'
@@ -22,6 +23,8 @@ function App() {
       
       {/* 3D Canvas Layer */}
       <div className="fixed inset-0 z-0 pointer-events-none">
+  <Scene currentScreen={currentScreen} />
+</div>
         {/* <Scene /> */}
       </div>
 
